@@ -33,7 +33,7 @@ pipeline AirportsPipeline {
       "Longitude" oftype decimal,
       "Altitude" oftype integer,
     ]; // Removed the  following columns: Zeitzone, DST, Zeitzonen-Datenbank, geo_punkt without selecting those columns.
-        // Column names have "not" been renamed.
+        //  Column names have "not" been renamed.
     }
 // Table is loaded into a SQLite file sink using structural information to generate the correct table
   block AirportsLoader oftype SQLiteLoader {
