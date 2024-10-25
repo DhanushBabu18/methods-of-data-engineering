@@ -1,0 +1,44 @@
+
+// Moviing data from a CSV file online to a SQLite database file.
+pipeline AirportsPipeline {
+
+  AirportsExtractor
+    -> AirportsTextFileInterpreter;
+
+  AirportsTextFileInterpreter
+    -> AirportsCSVInterpreter
+    -> AirportsTableInterpreter
+    -> AirportsLoader;
+
+  block AirportsExtractor oftype HttpExtractor {
+    url: "https://opendata.rhein-kreis-neuss.de/api/explore/v2.1/catalog/datasets/rhein-kreis-neuss-flughafen-weltweit/exports/csv?lang=en&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B";
+  }
+
+  block AirportsTextFileInterpreter oftype TextFileInterpreter { }
+  block AirportsCSVInterpreter oftype CSVInterpreter {
+    enclosing: '"'; 
+  }
+
+  block AirportsTableInterpreter oftype TableInterpreter {
+    header: true; 
+    //Assigning fitting built-in SQLite types (e.g., BIGINT, TEXT or FLOAT) to all other columns
+    columns: [
+      "Lfd. Nummer" oftype integer,
+      "Name des Flughafens" oftype text,
+      "Ort" oftype text,
+      "Land" oftype text,
+      "IATA" oftype text,
+      "ICAO" oftype text,
+      "Latitude" oftype decimal,
+      "Longitude" oftype decimal,
+      "Altitude" oftype integer,
+    ]; // Removed the  following columns: Zeitzone, DST, Zeitzonen-Datenbank, geo_punkt without selecting those columns.
+        // Column names have "not" been renamed.
+    }
+// Table is loaded into a SQLite file sink using structural information to generate the correct table
+  block AirportsLoader oftype SQLiteLoader {
+    table: "Airports";
+    file: "./airports.sqlite"; 
+  }
+
+}
