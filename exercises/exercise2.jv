@@ -1,0 +1,63 @@
+//  data pipeline definition
+pipeline TreesPipeline {
+
+   
+    TreesDataExtractor -> TreesTextFileInterpreter
+        -> TreesCSVInterpreter -> TreesColumnFilter
+        -> TreesTableInterpreter -> TreesDataLoader;
+
+    //Uploading the data using url
+    block TreesDataExtractor oftype HttpExtractor {
+        url: "https://opendata.rhein-kreis-neuss.de/api/v2/catalog/datasets/stadt-neuss-herbstpflanzung-2023/exports/csv";
+    }
+
+    block TreesTextFileInterpreter oftype TextFileInterpreter { }
+
+    // loading the data
+    block TreesCSVInterpreter oftype CSVInterpreter {
+        delimiter: ";";
+    }
+
+    // Droping the column E i.e "baumart_deutsch"
+    block TreesColumnFilter oftype ColumnDeleter {
+        delete: [column E];
+    }
+
+    // Creating the table  
+    block TreesTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "lfd_nr" oftype integer,
+            "stadtteil" oftype City,        // Define constraint to filter "Vogelsang" entries
+            "standort" oftype text,
+            "baumart_botanisch" oftype text,
+            "id" oftype Geo_Coordinate,     // Define pattern for geo-coordinates
+            "baumfamilie" oftype text
+        ];
+    }
+
+    //Connecting to SQLite database
+    block TreesDataLoader oftype SQLiteLoader {
+        table: "trees";
+        file: "./trees.sqlite";
+    }
+}
+
+// Validating data where "stadtteil" starts with "Vogelsang"
+valuetype City oftype text {
+    constraints: [
+        StartsWithVogelsang,
+    ];
+}
+constraint StartsWithVogelsang on text:
+    value matches /^Vogelsang/;
+
+// Validate "id" for correct geo-coordinate format
+valuetype Geo_Coordinate oftype text {
+    constraints: [
+        ValidGeoCoordinate,
+    ];
+}
+constraint ValidGeoCoordinate oftype RegexConstraint {
+    regex: /^\d{1,3}\.\d+, \d{1,3}\.\d+$/;
+}
