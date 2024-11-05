@@ -10,7 +10,7 @@
 3. Which states have the highest incidence of gun violence, and what economic factors are associated with these states?
 4. What is the correlation between economic indicators (e.g., poverty rate, unemployment) and gun violence rates at the state level?
 
-## Objective
+## Description
 The primary objective of this project is to analyze correlations between economic indicators (such as GDP per capita and total GDP) and gun violence across different U.S. states. By using these indicators, the aim is to explore whether economic factors have a statistically significant relationship with the prevalence of gun violence, providing insights that may inform policy or further study.
 
 ## Datasets
