@@ -1,0 +1,91 @@
+// Creating an automated data pipeline for the World Development Report
+pipeline WorldDevelopmentReportPipeline {
+
+    WorldBankDataExtractor
+        -> WorldBankExcelInterpreter
+        -> WorldBankSheetSelector
+        -> WorldBankDataSelector
+        -> WorldBankHeaderRenamer
+        -> WorldBankDataValidator
+        -> BondIssuanceLoader
+        -> GdpPerCapitaLoader;
+
+   
+    block WorldBankDataExtractor oftype HttpExtractor {
+        url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
+    }
+
+    
+    block WorldBankExcelInterpreter oftype ExcelInterpreter { }
+
+    
+    block WorldBankSheetSelector oftype SheetSelector {
+        sheet: "Figure S5.1.2";
+    }
+
+    
+    block WorldBankDataSelector oftype CellRangeSelector {
+        select: range P2:S45;
+    }
+
+    
+    block WorldBankHeaderRenamer oftype HeaderRenamer {
+        rename: {
+            "ISO3": "Country Code",
+            "GDP per capita (US$, thousands)": "GDP per Capita",
+            "Share of government sustainable bonds": "Bond Issuance Share"
+        };
+    }
+
+    
+    block WorldBankDataValidator oftype RowValidator {
+        rules: [
+            
+            { column: "Country Code", type: CountryCodeAlpha3 },
+
+           
+            { column: "GDP per Capita", type: PositiveDecimal },
+
+            
+            { column: "Bond Issuance Share", type: DecimalRangeZeroToOne }
+        ];
+    }
+
+    
+    block BondIssuanceLoader oftype SQLiteLoader {
+        table: "bondIssuance";
+        file: "./country-stats.sqlite";
+        columns: [
+            "Country Code" oftype TEXT,
+            "Bond Issuance Share" oftype FLOAT
+        ];
+    }
+
+    
+    block GdpPerCapitaLoader oftype SQLiteLoader {
+        table: "gdpPerCapita";
+        file: "./country-stats.sqlite";
+        columns: [
+            "Country Code" oftype TEXT,
+            "GDP per Capita" oftype FLOAT
+        ];
+    }
+}
+
+
+valuetype PositiveDecimal oftype float {
+    constraints: [ DecimalGreaterThanOrEqualZero ];
+}
+
+
+constraint DecimalGreaterThanOrEqualZero on float:
+    value >= 0;
+
+
+valuetype DecimalRangeZeroToOne oftype float {
+    constraints: [ DecimalBetweenZeroAndOne ];
+}
+
+
+constraint DecimalBetweenZeroAndOne on float:
+    0 <= value <= 1;
