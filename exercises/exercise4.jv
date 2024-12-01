@@ -38,12 +38,12 @@ pipeline TemperaturePipeline {
         delete: [column F, column G, column H, column I];
     }
 
-    // Step 4: Select relevant data range
+    // Step 4: Select required data range
     block TemperatureColDataSelector oftype CellRangeSelector {
         select: range A1:J*;
     }
 
-    // Step 5: Define table structure and rename columns
+    // Step 5: Defining table structure and rename columns
     block TemperatureTableInterpreter oftype TableInterpreter {
         header: false;
         columns: [
@@ -83,18 +83,18 @@ transform CelsiusToFahrenheit {
     Fahrenheit: (Celsius * 9/5) + 32;
 }
 
-// Validations
+
 valuetype ValidID oftype integer {
     constraints: [
         GreaterthanZero,
     ];
 }
 
-// Constraint: ID must be greater than zero
+
 constraint GreaterthanZero on integer:
     value > 0;
 
-// Validation: Month must be between 1 and 12
+// Validation: Month  between 1 and 12
 valuetype Month oftype integer {
     constraints: [
         MonthRange,
