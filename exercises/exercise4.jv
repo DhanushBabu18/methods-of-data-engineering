@@ -1,96 +1,101 @@
-TemperatureExercise4Pipeline {
+pipeline TemperaturePipeline {
+// Creating an automated data pipeline
+    TemperatureZipExtractor
+        -> TemperatureZipArchiveInterpreter
+        -> TemperatureFilePicker
+        -> TemperatureTextFileInterpreter
+        -> TemperatureCSVInterpreter
+        -> TemperatureColumnDeleter
+        -> TemperatureColDataSelector
+        -> TemperatureTableInterpreter
+        -> CelsiusToFahrenheitTemperature
+        -> CelsiusToFahrenheitBatteryTemperature
+        -> TemperatureSQLloader;
 
-     Exercise4ZipExtractor 
-        -> Exercise4ZipArchiveInterpreter
-        -> Exercise4FilePicker
-        -> Exercise4TextFileInterpreter
-        -> Exercise4CSVInterpreter
-        -> Exercise4ColumnDeleter
-        -> Exercise4ColDataSelector
-        -> Exercise4TableInterpreter
-        -> FahrenheitToKelvinTemperature
-        -> FahrenheitToKelvinBatteryTemperature
-        -> Exercise4SQLLoader;
+    // Step 1: Download and extract the ZIP file
+    block TemperatureZipExtractor oftype HttpExtractor {
+        url: "https://www.mowesta.com/data/measure/mowesta-dataset-20221107.zip";
+    }
 
-     block Exercise4ZipExtractor oftype HttpExtractor {
-        url: "https://example.com/data/temperature-exercise4-dataset.zip";
-     }
-
-     block Exercise4ZipArchiveInterpreter oftype ArchiveInterpreter {
+    block TemperatureZipArchiveInterpreter oftype ArchiveInterpreter {
         archiveType: "zip";
-     }
+    }
 
-     block Exercise4FilePicker oftype FilePicker {
-        path: "/exercise4_data.csv";
-     }
+    block TemperatureFilePicker oftype FilePicker {
+        path: "/data.csv";
+    }
 
-     block Exercise4TextFileInterpreter oftype TextFileInterpreter {
-     }
-    
-     block Exercise4CSVInterpreter oftype CSVInterpreter   {
-        delimiter: ",";
-     }
+    block TemperatureTextFileInterpreter oftype TextFileInterpreter {
+    }
 
-     
-     block Exercise4ColumnDeleter oftype ColumnDeleter {
-        delete: [column E, column F, column G];
-     }
+    // Step 2: Interpret the CSV file
+    block TemperatureCSVInterpreter oftype CSVInterpreter {
+        delimiter: ";";
+    }
 
-   
-     block Exercise4ColDataSelector oftype CellRangeSelector   {
-        select: range A1:H*;
-     }
+    // Step 3: Remove unwanted columns
+    block TemperatureColumnDeleter oftype ColumnDeleter {
+        delete: [column F, column G, column H, column I];
+    }
 
-     
-     block Exercise4TableInterpreter oftype TableInterpreter    {
+    // Step 4: Select relevant data range
+    block TemperatureColDataSelector oftype CellRangeSelector {
+        select: range A1:J*;
+    }
+
+    // Step 5: Define table structure and rename columns
+    block TemperatureTableInterpreter oftype TableInterpreter {
         header: false;
         columns: [
-            "device_id" oftype ValidID,
-            "manufacturer" oftype text,
-            "device_type" oftype text,
-            "reading_month" oftype Month,
-            "ambient_temperature" oftype decimal,
+            "id" oftype ValidID,
+            "producer" oftype text,
+            "model" oftype text,
+            "month" oftype Month,
+            "temperature" oftype decimal,
             "battery_temperature" oftype decimal,
         ];
-     }
+    }
 
-     block FahrenheitToKelvinTemperature oftype TableTransformer {
-          inputColumns: ['ambient_temperature'];
-          outputColumn: 'ambient_temperature_kelvin';
-          use: FahrenheitToKelvin;
-     }
+    // Step 6: Convert Celsius to Fahrenheit for temperatures
+    block CelsiusToFahrenheitTemperature oftype TableTransformer {
+        inputColumns: ["temperature"];
+        outputColumn: "temperature";
+        use: CelsiusToFahrenheit;
+    }
 
-     block FahrenheitToKelvinBatteryTemperature oftype TableTransformer {
-          inputColumns: ['battery_temperature'];
-          outputColumn: 'battery_temperature_kelvin';
-          use: FahrenheitToKelvin;
-     }
+    block CelsiusToFahrenheitBatteryTemperature oftype TableTransformer {
+        inputColumns: ["battery_temperature"];
+        outputColumn: "battery_temperature";
+        use: CelsiusToFahrenheit;
+    }
 
-     
-     block Exercise4SQLLoader oftype SQLiteLoader {
-        table: 'exercise4_temperatures';
-        file: './exercise4_temperatures.sqlite';
-     }
-
+    // Step 7: Load data into SQLite database
+    block TemperatureSQLloader oftype SQLiteLoader {
+        table: "temperatures";
+        file: "./temperatures.sqlite";
+    }
 }
 
-
-transform FahrenheitToKelvin {
-   from Fahrenheit oftype decimal;
-   to Kelvin oftype decimal;
-   Kelvin: ((Fahrenheit - 32) * 5/9) + 273.15;
+// Transformation logic: Convert Celsius to Fahrenheit
+transform CelsiusToFahrenheit {
+    from Celsius oftype decimal;
+    to Fahrenheit oftype decimal;
+    Fahrenheit: (Celsius * 9/5) + 32;
 }
 
+// Validations
 valuetype ValidID oftype integer {
     constraints: [
         GreaterthanZero,
     ];
 }
 
+// Constraint: ID must be greater than zero
 constraint GreaterthanZero on integer:
-    value > 0 ;
+    value > 0;
 
-valuetype Month oftype integer  {
+// Validation: Month must be between 1 and 12
+valuetype Month oftype integer {
     constraints: [
         MonthRange,
     ];
