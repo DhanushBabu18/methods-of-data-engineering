@@ -1,0 +1,104 @@
+TemperatureExercise4Pipeline {
+
+     Exercise4ZipExtractor 
+        -> Exercise4ZipArchiveInterpreter
+        -> Exercise4FilePicker
+        -> Exercise4TextFileInterpreter
+        -> Exercise4CSVInterpreter
+        -> Exercise4ColumnDeleter
+        -> Exercise4ColDataSelector
+        -> Exercise4TableInterpreter
+        -> FahrenheitToKelvinTemperature
+        -> FahrenheitToKelvinBatteryTemperature
+        -> Exercise4SQLLoader;
+
+     block Exercise4ZipExtractor oftype HttpExtractor {
+        url: "https://example.com/data/temperature-exercise4-dataset.zip";
+     }
+
+     block Exercise4ZipArchiveInterpreter oftype ArchiveInterpreter {
+        archiveType: "zip";
+     }
+
+     block Exercise4FilePicker oftype FilePicker {
+        path: "/exercise4_data.csv";
+     }
+
+     block Exercise4TextFileInterpreter oftype TextFileInterpreter {
+     }
+    
+     block Exercise4CSVInterpreter oftype CSVInterpreter   {
+        delimiter: ",";
+     }
+
+     
+     block Exercise4ColumnDeleter oftype ColumnDeleter {
+        delete: [column E, column F, column G];
+     }
+
+   
+     block Exercise4ColDataSelector oftype CellRangeSelector   {
+        select: range A1:H*;
+     }
+
+     
+     block Exercise4TableInterpreter oftype TableInterpreter    {
+        header: false;
+        columns: [
+            "device_id" oftype ValidID,
+            "manufacturer" oftype text,
+            "device_type" oftype text,
+            "reading_month" oftype Month,
+            "ambient_temperature" oftype decimal,
+            "battery_temperature" oftype decimal,
+        ];
+     }
+
+     block FahrenheitToKelvinTemperature oftype TableTransformer {
+          inputColumns: ['ambient_temperature'];
+          outputColumn: 'ambient_temperature_kelvin';
+          use: FahrenheitToKelvin;
+     }
+
+     block FahrenheitToKelvinBatteryTemperature oftype TableTransformer {
+          inputColumns: ['battery_temperature'];
+          outputColumn: 'battery_temperature_kelvin';
+          use: FahrenheitToKelvin;
+     }
+
+     
+     block Exercise4SQLLoader oftype SQLiteLoader {
+        table: 'exercise4_temperatures';
+        file: './exercise4_temperatures.sqlite';
+     }
+
+}
+
+
+transform FahrenheitToKelvin {
+   from Fahrenheit oftype decimal;
+   to Kelvin oftype decimal;
+   Kelvin: ((Fahrenheit - 32) * 5/9) + 273.15;
+}
+
+valuetype ValidID oftype integer {
+    constraints: [
+        GreaterthanZero,
+    ];
+}
+
+constraint GreaterthanZero on integer:
+    value > 0 ;
+
+valuetype Month oftype integer  {
+    constraints: [
+        MonthRange,
+    ];
+}
+
+constraint MonthRange oftype RangeConstraint {
+    lowerBound: 1;
+    lowerBoundInclusive: true;
+    upperBound: 12;
+    upperBoundInclusive: true;
+}

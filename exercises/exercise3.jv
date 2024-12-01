@@ -1,4 +1,3 @@
-// Creating an automated data pipeline for the World Development Report
 pipeline WorldDevelopmentReportPipeline {
 
     WorldBankDataExtractor
@@ -8,8 +7,7 @@ pipeline WorldDevelopmentReportPipeline {
         -> WorldBankHeaderRenamer
         -> WorldBankDataValidator
         -> BondIssuanceLoader
-        -> GdpPerCapitaLoader;
-
+        -> GdpPerCapitaLoader ;
    
     block WorldBankDataExtractor oftype HttpExtractor {
         url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
