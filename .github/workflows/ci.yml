@@ -1,40 +1,28 @@
-name: Test Runner
+name: Run Tests
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - project/**
+    push:
+        branches:
+        - main
+        paths:
+        - project/**
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
+    tests:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
 
-      # Set up Python
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.12
+        
+        - name: Set up Python 3.11
+          uses: actions/setup-python@v4
+          with:
+            python-version: 3.11
 
-      # Debugging:  List files to confirm tests.sh exists in the right location
-      - name: List repository files
-        run: |
-          echo "Listing files in the repository:"
-          ls -R
-
-      # Make the script files executable
-      - name: Make the script files executable
-        run: chmod +x project/tests.sh
-
-      # Install dependencies
-      - name: Install dependencies
-        run: pip install -r project/requirements.txt
-
-      # Run Tests
-      - name: Run Tests
-        run: ./project/tests.sh
+        - name: Make the script files executable
+          run: chmod +x ./project/tests.sh
+            
+        - name: Run Tests
+          run: ./project/tests.sh
