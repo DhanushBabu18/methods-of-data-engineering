@@ -1,0 +1,29 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest  #Based on operating system
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up environment (if needed)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10  # Adjust the version as per your system
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt  
+
+      # Step 4: Run tests
+      - name: Run tests
+        run: ./tests.sh
