@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: 3.12
 
-      # Debugging: List files to confirm tests.sh exists in the right location
+      # Debugging:  List files to confirm tests.sh exists in the right location
       - name: List repository files
         run: |
           echo "Listing files in the repository:"
