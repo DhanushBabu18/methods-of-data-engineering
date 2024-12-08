@@ -7,23 +7,16 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest  #Based on operating system
+    runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up environment (if needed)
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9  # Adjust the version as per your system
-      # Step 3: Install dependencies
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt  
+          python-version: 3.9  # Use your desired Python version
 
-      # Step 4: Run tests
-      - name: Run tests
+      - name: Install dependencies and run tests
         run: ./tests.sh
