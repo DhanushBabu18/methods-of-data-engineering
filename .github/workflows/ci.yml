@@ -15,15 +15,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      #install python
+      # Set up Python
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
 
+      # Debugging: List files to confirm tests.sh exists in the right location
+      - name: List repository files
+        run: |
+          echo "Listing files in the repository:"
+          ls -R
+
+      # Make the script files executable
       - name: Make the script files executable
         run: chmod +x project/tests.sh
 
+      # Install dependencies
+      - name: Install dependencies
+        run: pip install -r project/requirements.txt
+
+      # Run Tests
       - name: Run Tests
         run: ./project/tests.sh
-       
