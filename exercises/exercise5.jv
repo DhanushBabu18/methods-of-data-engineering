@@ -1,0 +1,66 @@
+pipeline GTFSPipeline {
+
+    block GTFSZipExtractor oftype HttpExtractor {
+        url: "https://gtfs.rhoenenergie-bus.de/GTFS.zip";
+    }
+
+    block GTFSZipArchiveInterpreter oftype ArchiveInterpreter {
+        archiveType: "zip";
+    }
+
+    block StopsFilePicker oftype FilePicker {
+        path: "/stops.txt";
+    }
+
+    block StopsTextFileInterpreter oftype TextFileInterpreter {
+        encoding: "utf8";
+    }
+
+    block StopsCSVInterpreter oftype CSVInterpreter {
+        delimiter: ',';
+        enclosing: '"';
+        enclosingEscape: '"';
+    }
+
+    block StopsTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "stop_id" oftype integer,
+            "stop_name" oftype text,
+            "stop_lat" oftype GeoCoordinate,
+            "stop_lon" oftype GeoCoordinate,
+            "zone_id" oftype ZoneID
+        ];
+    }
+
+    block GTFSSQLLoader oftype SQLiteLoader {
+        table: "stops";
+        file: "./gtfs.sqlite";
+    }
+
+    valuetype ZoneID oftype integer {
+        constraints: [ZoneOf1925Only];
+    }
+
+    constraint ZoneOf1925Only on integer:
+        value == 1925;
+
+    valuetype GeoCoordinate oftype decimal {
+        constraints: [GeoCoordinateRange];
+    }
+
+    constraint GeoCoordinateRange oftype RangeConstraint {
+        lowerBound: -90.0;
+        lowerBoundInclusive: true;
+        upperBound: 90.0;
+        upperBoundInclusive: true;
+    }
+
+    GTFSZipExtractor
+        -> GTFSZipArchiveInterpreter
+        -> StopsFilePicker
+        -> StopsTextFileInterpreter
+        -> StopsCSVInterpreter
+        -> StopsTableInterpreter
+        -> GTFSSQLLoader;
+}
