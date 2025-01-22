@@ -1,4 +1,5 @@
-# Methods of Advanced Data Engineering Template Project
+# Economic Determinants of Gun Violence in the United States: Analysing Socioeconomic Trends and State-Level Disparities 
+<img src="project\images.png" width="800" height="466">
 
 This template project provides some structure for your open data project in the MADE module at FAU.
 This repository contains (a) a data science project that is developed by the student over the course of the semester, and (b) the exercises that are submitted over the course of the semester.
