@@ -1,38 +1,94 @@
 # Economic Determinants of Gun Violence in the United States: Analysing Socioeconomic Trends and State-Level Disparities 
 <img src="project\image.jpg" width="500" height="400">
 
-This template project provides some structure for your open data project in the MADE module at FAU.
-This repository contains (a) a data science project that is developed by the student over the course of the semester, and (b) the exercises that are submitted over the course of the semester.
+## Project Overview
+Gun violence is a critical issue in the United States, with significant social, economic, and political 
+implications. Understanding the economic factors that contribute to its prevalence is essential for 
+effective policymaking. This report aims to analyse the relationship between various economic 
+indicators—such as GDP and GDP per capita—and the occurrence of gun violence across U.S. states. 
 
-To get started, please follow these steps:
-1. Create your own fork of this repository. Feel free to rename the repository right after creation, before you let the teaching instructors know your repository URL. **Do not rename the repository during the semester**.
+### Datasets
+1. Gun Violence Data (U.S.): Contains information on gun violence incidents across the U.S., 
+including location, date, number of killed and type of violence. The data covers a broad time 
+frame and includes detailed event information. 
+2. U.S. GDP by State (1997-2020): Provides GDP data for each U.S. state from 1997 to 2020, 
+crucial for examining the economic landscape. 
+3. GDP per Capita by State: Offers GDP per capita information by state, allowing us to assess 
+economic disparities at the individual state level.
 
-## Project Work
-Your data engineering project will run alongside lectures during the semester. We will ask you to regularly submit project work as milestones, so you can reasonably pace your work. All project work submissions **must** be placed in the `project` folder.
+[**Project Data Report**](project/data-report.pdf): Document detailing data cleaning and pipeline procedures.
 
-### Exporting a Jupyter Notebook
-Jupyter Notebooks can be exported using `nbconvert` (`pip install nbconvert`). For example, to export the example notebook to HTML: `jupyter nbconvert --to html examples/final-report-example.ipynb --embed-images --output final-report.html`
+[**Project Analysis Report**](project/analysis-report.pdf): Final report containing data analysis and visualizations.
 
+[**Project EDA**](project/EDA-report-analysis.ipynb): Notebook showcasing exploratory data analysis (EDA) for the project.
 
-## Exercises
-During the semester you will need to complete exercises using [Jayvee](https://github.com/jvalue/jayvee). You **must** place your submission in the `exercises` folder in your repository and name them according to their number from one to five: `exercise<number from 1-5>.jv`.
+[**Presentation Slides**](project/slides.pdf)
 
-In regular intervals, exercises will be given as homework to complete during the semester. Details and deadlines will be discussed in the lecture, also see the [course schedule](https://made.uni1.de/).
+[**Presenation Video Link**](project/presentation-video.md)
 
-### Exercise Feedback
-We provide automated exercise feedback using a GitHub action (that is defined in `.github/workflows/exercise-feedback.yml`). 
+## Installation and Usage
+Instructions for setting up the project environment and running the analysis scripts.
 
-To view your exercise feedback, navigate to Actions → Exercise Feedback in your repository.
+```bash
+# Clone the repository
+https://github.com/DhanushBabu18/methods-of-data-engineering.git
 
-The exercise feedback is executed whenever you make a change in files in the `exercise` folder and push your local changes to the repository on GitHub. To see the feedback, open the latest GitHub Action run, open the `exercise-feedback` job and `Exercise Feedback` step. You should see command line output that contains output like this:
+# Install dependencies
+pip install -r requirements.txt
 
-```sh
-Found exercises/exercise1.jv, executing model...
-Found output file airports.sqlite, grading...
-Grading Exercise 1
-	Overall points 17 of 17
-	---
-	By category:
-		Shape: 4 of 4
-		Types: 13 of 13
 ```
+
+## Data Pipeline and Testing
+
+### Data Pipeline [here](project/automated_datapipeline.py)
+Our project includes an automated data pipeline designed for wildfire analysis:
+
+1. **Data Fetching**: Automatically retrieves US Gun violence,GDP per state and GDP per capita datasets from specified sources.
+2. **Data Transformation and Cleaning**: Applies necessary transformations and cleans the data to ensure accuracy and consistency.
+3. **Data Loading**: Transformed data is loaded into structured formats suitable for analysis, ensuring integrity for further investigation
+
+This pipeline ensures that our wildfire data is prepared and maintained for reliable analysis of trends and impacts.
+
+### Test Script [here](project/automated_testing.py)
+We have developed a rigorous test script to validate our wildfire data pipeline:
+
+1. Tests include verification of data fetching accuracy.
+2. Ensures proper data cleaning and transformation procedures are followed.
+3. Validates data integrity and consistency throughout the pipeline.
+
+### Automated Workflow [here](.github/workflows/test_runner.yml)
+To maintain the reliability of our wildfire data pipeline, we have set up an automated workflow using GitHub Actions:
+
+* **Continuous Integration Tests**: Automatically runs our test script upon every push to the main branch.Ensures any updates or modifications do not compromise the functionality and accuracy of the data pipeline.
+  
+This automated workflow guarantees a robust and error-free approach to analyzing wildfire trends and impacts, ensuring high-quality project outcomes.
+
+## How to Run the Data Pipeline and Tests
+Provide detailed instructions on how to execute the data pipeline and run the test scripts. Include any necessary commands or steps to set up the environment.
+
+```bash
+# command to run the data pipeline
+python3 automated_datapipeline.py
+
+# command to execute the test script
+python3 automated_testing.py
+```
+
+## Contributing
+We welcome contributions to this project! If you would like to contribute, please follow these steps:
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Make your changes and commit them (`git commit -am 'Add some feature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Create a new Pull Request.
+
+Please ensure your code is well-documented.
+
+## Authors and Acknowledgment
+This project was initiated and completed by Dhanush Hareesh Babu. 
+
+## Special Thanks to Our Tutors:
+I would like to extend my gratitude to our tutors for their guidance and support throughout this project.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
