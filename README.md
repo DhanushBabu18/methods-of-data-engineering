@@ -57,7 +57,7 @@ We have developed a rigorous test script to validate our wildfire data pipeline:
 3. Validates data integrity and consistency throughout the pipeline.
 
 ### Automated Workflow [here](.github/workflows/ci.yml)
-To maintain the reliability of our wildfire data pipeline, we have set up an automated workflow using GitHub Actions:
+To maintain the reliability of our data pipeline, we have set up an automated workflow using GitHub Actions:
 
 * **Continuous Integration Tests**: Automatically runs our test script upon every push to the main branch.Ensures any updates or modifications do not compromise the functionality and accuracy of the data pipeline.
   
